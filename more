@@ -1,0 +1,23 @@
+import scrapy
+
+
+class QuotesSpider(scrapy.Spider):
+    name = "finance"
+    allowed_domains = ["yahoo.com"]
+    start_urls = [
+        'https://finance.yahoo.com/quote/GE/profile?p=GE',
+        'https://finance.yahoo.com/quote/AMTD/profile?p=AMTD',
+    ]
+
+    def parse(self, response):
+        self.log('I just visited: ' + response.url)
+        for quote in response.css('tr.C\(black\)'):
+            item = {
+                'name': quote.css('td:nth-child(1)::text').extract_first(), #good
+                'title' : quote.css('td:nth-child(2)::text').extract_first(),
+                'salary': quote.css('td:nth-child(3)::text').extract_first(), #good
+                'age' : quote.css('td:nth-child(5)::text').extract_first(), #good
+                'url' : response.url
+            }
+            yield item
+            
